@@ -1,7 +1,6 @@
 package com.whut.teaching.config;
 
 import com.whut.teaching.interceptor.LoginInterceptor;
-import com.whut.teaching.interceptor.RequestCounterInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,9 +15,9 @@ public class BeansInitializer {
         return new LoginInterceptor();
     }
 
-    @Bean(name = "RequestCounterInterceptor")
-    public RequestCounterInterceptor requestCounterInterceptor() {
-        return new RequestCounterInterceptor();
-    }
+//    @Bean(name = "RequestCounterInterceptor")
+//    public RequestCounterInterceptor requestCounterInterceptor() {
+//        return new RequestCounterInterceptor();
+//    }
 
 }
