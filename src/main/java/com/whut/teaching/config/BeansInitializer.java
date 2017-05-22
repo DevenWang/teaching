@@ -15,9 +15,4 @@ public class BeansInitializer {
         return new LoginInterceptor();
     }
 
-//    @Bean(name = "RequestCounterInterceptor")
-//    public RequestCounterInterceptor requestCounterInterceptor() {
-//        return new RequestCounterInterceptor();
-//    }
-
 }

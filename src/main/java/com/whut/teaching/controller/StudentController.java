@@ -110,7 +110,7 @@ public class StudentController {
     @ApiOperation("获取个人信息")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/profile_get", method = RequestMethod.POST)
-    public VO<Student> profileUpdate(@ApiIgnore @RequestAttribute("student") Student student) {
+    public VO<Student> studentOwnInfo(@ApiIgnore @RequestAttribute("student") Student student) {
 
         return new VO<>(student);
     }
@@ -133,6 +133,7 @@ public class StudentController {
         student.setEmail(email);
         student.setPhone(phone);
         student.setStudentClass(studentClass);
+
         if (portraitUri != null && portraitUri.length() > 0) {
             student.setPortraitUri(portraitUri);
         }
@@ -172,6 +173,17 @@ public class StudentController {
                                                   @ApiParam(required = true) @RequestParam("name") String name) {
 
         List<Course> courses = courseService.findByTeacherName(name);
+
+        return new VO<>(courses);
+    }
+
+    @ApiOperation("查找学生选中所有课程")
+    @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
+    @RequestMapping(value = "/find_course_student_id", method = RequestMethod.POST)
+    public VO<List<Course>> findOwnAllCourse(@ApiIgnore @RequestAttribute("student") Student student,
+                                                  @ApiParam(required = true) @RequestParam("studentId") String studentId) {
+
+        List<Course> courses = courseRoomService.findByStudentId(studentId);
 
         return new VO<>(courses);
     }
@@ -278,7 +290,7 @@ public class StudentController {
     @ApiOperation("反馈")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/feedback", method = RequestMethod.POST)
-    public VO<Empty> feedBack(@ApiIgnore @RequestAttribute("student") Student student,
+    public VO<Empty> createFeedBack(@ApiIgnore @RequestAttribute("student") Student student,
                               @ApiParam(required = true) @RequestParam("courseId") String courseId,
                               @ApiParam(required = true) @RequestParam("content") String content) {
 
@@ -291,7 +303,7 @@ public class StudentController {
     @ApiOperation("查看作业")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/homework", method = RequestMethod.POST)
-    public VO<List<Homework>> homework(@ApiIgnore @RequestAttribute("student") Student student,
+    public VO<List<Homework>> findHomework(@ApiIgnore @RequestAttribute("student") Student student,
                                        @ApiParam(required = true) @RequestParam("courseId") String courseId) {
 
         List<Homework> homework = homeworkService.findHomework(courseId);
@@ -302,7 +314,7 @@ public class StudentController {
     @ApiOperation("私聊老师")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/to_teacher", method = RequestMethod.POST)
-    public VO toStudent(@ApiIgnore @RequestAttribute("student") Student student,
+    public VO toTeacher(@ApiIgnore @RequestAttribute("student") Student student,
                         @ApiParam(required = true) @RequestParam("teacherId") String teacherId,
                         @ApiParam(required = true) @RequestParam("content") String content,
                         @ApiParam(required = true) @RequestParam("objectName") String objectName) {

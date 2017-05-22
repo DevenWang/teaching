@@ -109,7 +109,7 @@ public class TeacherController {
     @ApiOperation("获取个人信息")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/profile_get", method = RequestMethod.POST)
-    public VO<Teacher> profileUpdate(@ApiIgnore @RequestAttribute("teacher") Teacher teacher) {
+    public VO<Teacher> teacherOwnInfo(@ApiIgnore @RequestAttribute("teacher") Teacher teacher) {
 
         return new VO<>(teacher);
     }
@@ -130,6 +130,7 @@ public class TeacherController {
         teacher.setInstituteId(instituteId);
         teacher.setEmail(email);
         teacher.setPhone(phone);
+
         if (portraitUri != null && portraitUri.length() > 0) {
             teacher.setPortraitUri(portraitUri);
         }
@@ -337,7 +338,7 @@ public class TeacherController {
     @ApiOperation("布置课后作业")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/homework", method = RequestMethod.POST)
-    public VO<Empty> homework(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
+    public VO<Empty> createHomework(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
                               @ApiParam(required = true) @RequestParam("courseId") String courseId,
                               @ApiParam(required = true) @RequestParam("endTime") String endTime,
                               @ApiParam(required = true) @RequestParam("homework") String homework) {
@@ -351,7 +352,7 @@ public class TeacherController {
     @ApiOperation("查看课程反馈")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/feedback", method = RequestMethod.POST)
-    public VO<List<FeedBack>> feedBack(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
+    public VO<List<FeedBack>> searchFeedBack(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
                                        @ApiParam(required = true) @RequestParam("courseId") String courseId) {
 
         List<FeedBack> feedBacks = feedBackService.findByCourseId(courseId);

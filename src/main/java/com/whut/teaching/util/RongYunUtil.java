@@ -17,6 +17,7 @@ public class RongYunUtil {
 
     /**
      * 用户获取融云的用户token
+     *
      * @param userId
      * @param userName
      * @param portratUri
@@ -24,6 +25,11 @@ public class RongYunUtil {
      */
     public static String getToken(String userId, String userName, String portratUri) {
         TokenResult userGetTokenResult = null;
+
+        if (portratUri == null || portratUri.length() <= 0) {
+            portratUri = " ";
+        }
+
         try {
             userGetTokenResult = rongCloud.user.getToken(userId, userName, portratUri);
         } catch (Exception e) {
@@ -37,12 +43,13 @@ public class RongYunUtil {
 
     /**
      * 发送系统消息，文本消息
+     *
      * @param fromId
      * @param toId
      * @param message
      * @return
      */
-    public static CodeSuccessResult PublishSystem(String fromId, String[] toId,String message) {
+    public static CodeSuccessResult PublishSystem(String fromId, String[] toId, String message) {
 
         CodeSuccessResult codeSuccessResult = null;
         TxtMessage txtMessage = new TxtMessage(message, "");
@@ -58,6 +65,7 @@ public class RongYunUtil {
 
     /**
      * 一对一聊天，文本消息
+     *
      * @param fromId
      * @param toId
      * @param message
@@ -70,7 +78,7 @@ public class RongYunUtil {
         TxtMessage txtMessage = new TxtMessage(message, "");
 
         try {
-            codeSuccessResult = rongCloud.message.publishPrivate(fromId,to_a_Id, txtMessage, "", "", "4", 0, 1, 0, 0);
+            codeSuccessResult = rongCloud.message.publishPrivate(fromId, to_a_Id, txtMessage, "", "", "4", 0, 1, 0, 0);
         } catch (Exception e) {
             e.printStackTrace();
         }
