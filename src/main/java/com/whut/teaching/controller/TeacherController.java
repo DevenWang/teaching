@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -160,6 +161,32 @@ public class TeacherController {
 
         Course course = new Course(MyUtil.getStringID(), teacher.getTeacherId(), name, courseDesc, new Date(), Course.STARTING_COURSE);
         courseService.saveOrUpdate(course);
+
+        return new VO(new Empty());
+    }
+
+    @ApiOperation("批量添加学生到课程")
+    @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
+    @RequestMapping(value = "/add_stu_to_course", method = RequestMethod.POST)
+    public VO<Empty> addStudentToCourse(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
+                                        @ApiParam(required = true) @RequestParam("courseId") String courseId,
+                                        @ApiParam(required = true) @RequestParam("studentIds") List<String> studentIds) {
+
+        /*
+
+        //如果传的学生id是一个以“，”分割的多个id，采用以下方法
+
+        //优化后高效的字符串分割方式
+        List<String> resultId = new ArrayList<>();
+        while (true) {
+            int j = studentIds.indexOf(',');
+            if (j<0) break;
+            resultId.add(studentIds.substring(0, j));
+            studentIds = studentIds.substring(j + 1);
+        }
+        */
+
+        courseRoomService.addStudentsToCourse(courseId, studentIds);
 
         return new VO(new Empty());
     }
@@ -339,9 +366,9 @@ public class TeacherController {
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/homework", method = RequestMethod.POST)
     public VO<Empty> createHomework(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
-                              @ApiParam(required = true) @RequestParam("courseId") String courseId,
-                              @ApiParam(required = true) @RequestParam("endTime") String endTime,
-                              @ApiParam(required = true) @RequestParam("homework") String homework) {
+                                    @ApiParam(required = true) @RequestParam("courseId") String courseId,
+                                    @ApiParam(required = true) @RequestParam("endTime") String endTime,
+                                    @ApiParam(required = true) @RequestParam("homework") String homework) {
 
         Homework homework1 = new Homework(MyUtil.getStringID(), courseId, homework, new Date(), endTime);
         homeworkService.saveAndUpdate(homework1);
@@ -353,7 +380,7 @@ public class TeacherController {
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/feedback", method = RequestMethod.POST)
     public VO<List<FeedBack>> searchFeedBack(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
-                                       @ApiParam(required = true) @RequestParam("courseId") String courseId) {
+                                             @ApiParam(required = true) @RequestParam("courseId") String courseId) {
 
         List<FeedBack> feedBacks = feedBackService.findByCourseId(courseId);
 
@@ -386,9 +413,9 @@ public class TeacherController {
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/to_student", method = RequestMethod.POST)
     public VO<Empty> toStudent(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
-                        @ApiParam(required = true) @RequestParam("studentId") String studentId,
-                        @ApiParam(required = true) @RequestParam("content") String content,
-                        @ApiParam(required = true) @RequestParam("objectName") String objectName) {
+                               @ApiParam(required = true) @RequestParam("studentId") String studentId,
+                               @ApiParam(required = true) @RequestParam("content") String content,
+                               @ApiParam(required = true) @RequestParam("objectName") String objectName) {
 
         /*
             融云操作

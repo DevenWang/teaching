@@ -17,4 +17,6 @@ public interface CourseRoomDAO extends CrudRepository<CourseRoom, String> {
     @Query("select c.studentId from CourseRoom c where c.courseId=?1")
     List<String> findStudentId(String courseId);
 
+    List<CourseRoom> findByStudentIdAndCourseId(String studentId, String courseId);
+
 }

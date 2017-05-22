@@ -19,4 +19,6 @@ public interface CourseRoomService {
 
     List<Course> findByStudentId(String studentId);
 
+    Iterable<CourseRoom> addStudentsToCourse(String courseId, List<String> studentIds);
+
 }
