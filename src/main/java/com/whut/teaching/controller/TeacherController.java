@@ -255,7 +255,7 @@ public class TeacherController {
         /*
             融云操作
          */
-        CodeSuccessResult codeSuccessResult = RongYunUtil.PublishSystem(teacher.getTeacherId(), students.toArray(new String[students.size()]), "课堂点名");
+        CodeSuccessResult codeSuccessResult = RongYunUtil.PublishSystem(teacher.getTeacherId(), students.toArray(new String[students.size()]), "RollCall");
         if (codeSuccessResult == null || codeSuccessResult.getCode() != 200) {
             return new VO<>(5001, "融云服务器推送失败", new Empty());
         }
@@ -342,7 +342,7 @@ public class TeacherController {
         /*
             融云操作
          */
-        CodeSuccessResult codeSuccessResult = RongYunUtil.PublishSystem(teacher.getTeacherId(), students.toArray(new String[students.size()]), question);
+        CodeSuccessResult codeSuccessResult = RongYunUtil.PublishSystem(teacher.getTeacherId(), students.toArray(new String[students.size()]), "question");
         if (codeSuccessResult == null || codeSuccessResult.getCode() != 200) {
             return new VO<>(5001, "融云服务器推送失败", new Empty());
         }

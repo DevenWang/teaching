@@ -55,7 +55,7 @@ public class RongYunUtil {
         TxtMessage txtMessage = new TxtMessage(message, " ");
 
         try {
-            codeSuccessResult = rongCloud.message.PublishSystem(fromId, toId, txtMessage, "课堂消息", " ", 0, 0);
+            codeSuccessResult = rongCloud.message.PublishSystem(fromId, toId, txtMessage, "message", " ", 0, 0);
         } catch (Exception e) {
             System.out.println("融云发送失败！");
         }
