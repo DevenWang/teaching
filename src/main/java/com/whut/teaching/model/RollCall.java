@@ -11,8 +11,7 @@ public class RollCall {
 
     public static final int ENDING_ROLLCALL = 0;
     public static final int STARTING_ROLLCALL = 1;
-
-    public static final double DIATANCE = 30.0;
+    public static final double DIATANCE = 300.0;
 
     @Id
     @Column(length = 20)

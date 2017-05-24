@@ -1,5 +1,7 @@
 package com.whut.teaching.service;
 
+import com.whut.teaching.dto.CourseDTO;
+import com.whut.teaching.dto.CourseRoomDTO;
 import com.whut.teaching.model.Course;
 import com.whut.teaching.model.CourseRoom;
 import com.whut.teaching.model.Student;
@@ -20,5 +22,15 @@ public interface CourseRoomService {
     List<Course> findByStudentId(String studentId);
 
     Iterable<CourseRoom> addStudentsToCourse(String courseId, List<String> studentIds);
+
+    List<CourseRoom> findCourseRoomByCourseId(String courseId);
+
+    CourseRoom findByStuIdAnCoreId(String studentId, String courseId);
+
+    List<CourseRoomDTO> courseScores(String courseId);
+
+    List<CourseDTO> studentCourses(String studentId);
+
+    List<String> studentIdsBycourseId(String courseId);
 
 }

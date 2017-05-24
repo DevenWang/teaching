@@ -1,6 +1,7 @@
 package com.whut.teaching.service.impl;
 
 import com.whut.teaching.dao.CourseDAO;
+import com.whut.teaching.dto.CourseDTO;
 import com.whut.teaching.model.Course;
 import com.whut.teaching.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,21 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<Course> findByTeacherName(String teacherName) {
         return courseDAO.findByTeacherName(teacherName);
+    }
+
+    @Override
+    public List<CourseDTO> allCourseDTO() {
+        return courseDAO.allCourseDTO();
+    }
+
+    @Override
+    public List<CourseDTO> courseDTOByName(String name) {
+        return courseDAO.courseDTOByName(name);
+    }
+
+    @Override
+    public List<CourseDTO> courseDTOByTeacherName(String name) {
+        return courseDAO.courseDTOByTeacherName(name);
     }
 
 }

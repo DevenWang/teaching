@@ -1,6 +1,7 @@
 package com.whut.teaching.service;
 
 
+import com.whut.teaching.dto.StudentDTO;
 import com.whut.teaching.model.Institute;
 import com.whut.teaching.model.Student;
 
@@ -18,5 +19,9 @@ public interface StudentService {
     Student findById(String id);
 
     List<Institute> findAllInstitute();
+
+    Institute findInstituteById(String instituteId);
+
+    StudentDTO oneStudentDTO(String studentId);
 
 }

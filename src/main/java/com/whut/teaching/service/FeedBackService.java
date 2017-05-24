@@ -1,5 +1,6 @@
 package com.whut.teaching.service;
 
+import com.whut.teaching.dto.FeedbackDTO;
 import com.whut.teaching.model.FeedBack;
 
 import java.util.List;
@@ -14,5 +15,7 @@ public interface FeedBackService {
     List<FeedBack> findByCourseId(String courseId);
 
     List<FeedBack> findByStudentId(String studentId);
+
+    List<FeedbackDTO> courseFeedBackDTO(String courseId);
 
 }

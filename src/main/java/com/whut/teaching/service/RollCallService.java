@@ -1,5 +1,6 @@
 package com.whut.teaching.service;
 
+import com.whut.teaching.dto.RollCallDTO;
 import com.whut.teaching.model.ResponseRollcall;
 import com.whut.teaching.model.RollCall;
 import com.whut.teaching.model.Student;
@@ -22,5 +23,9 @@ public interface RollCallService {
     List<Student> findLastStudent(String rollCallId);
 
     ResponseRollcall saveAndUpdate(ResponseRollcall responseRollcall);
+
+    List<RollCallDTO> rollCallDTOByCourseId(String courseId);
+
+    RollCallDTO oneRollCallByCourseId(String courseId);
 
 }

@@ -1,5 +1,6 @@
 package com.whut.teaching.service;
 
+import com.whut.teaching.dto.CourseDTO;
 import com.whut.teaching.model.Course;
 
 import java.util.List;
@@ -20,5 +21,11 @@ public interface CourseService {
     List<Course> findByInstitute(String institute);
 
     List<Course> findByTeacherName(String teacherName);
+
+    List<CourseDTO> allCourseDTO();
+
+    List<CourseDTO> courseDTOByName(String name);
+
+    List<CourseDTO> courseDTOByTeacherName(String name);
 
 }

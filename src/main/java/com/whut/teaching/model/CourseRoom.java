@@ -22,14 +22,22 @@ public class CourseRoom {
     @Temporal(TemporalType.DATE)
     private Date joinTime;
 
+    @Column
+    private int rollCall;
+
+    @Column
+    private int question;
+
     public CourseRoom() {
     }
 
-    public CourseRoom(String courseRoomId, String studentId, String courseId, Date joinTime) {
+    public CourseRoom(String courseRoomId, String studentId, String courseId, Date joinTime, int rollCall, int question) {
         this.courseRoomId = courseRoomId;
         this.studentId = studentId;
         this.courseId = courseId;
         this.joinTime = joinTime;
+        this.rollCall = rollCall;
+        this.question = question;
     }
 
     public String getCourseRoomId() {
@@ -62,5 +70,21 @@ public class CourseRoom {
 
     public void setJoinTime(Date joinTime) {
         this.joinTime = joinTime;
+    }
+
+    public int getRollCall() {
+        return rollCall;
+    }
+
+    public void setRollCall(int rollCall) {
+        this.rollCall = rollCall;
+    }
+
+    public int getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(int question) {
+        this.question = question;
     }
 }

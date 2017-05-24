@@ -1,5 +1,6 @@
 package com.whut.teaching.controller;
 
+import com.whut.teaching.dto.*;
 import com.whut.teaching.model.*;
 import com.whut.teaching.service.*;
 import com.whut.teaching.util.JedisUtils;
@@ -41,9 +42,6 @@ public class StudentController {
     private RollCallService rollCallService;
 
     @Autowired
-    private ScoreService scoreService;
-
-    @Autowired
     private QuestionService questionService;
 
     @Autowired
@@ -74,8 +72,8 @@ public class StudentController {
 
     @ApiOperation("学生登录")
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public VO<Login<Student>> login(@ApiParam(required = true) @RequestParam("id") String id,
-                                    @ApiParam(required = true) @RequestParam("pwd") String pwd) {
+    public VO<Login<StudentDTO>> login(@ApiParam(required = true) @RequestParam("id") String id,
+                                       @ApiParam(required = true) @RequestParam("pwd") String pwd) {
 
         Student student = studentService.findById(id);
 
@@ -93,9 +91,11 @@ public class StudentController {
 
         JedisUtils.set(token, id);
 
-        Login<Student> login = new Login<>(token, student);
+//        Login<Student> login = new Login<>(token, student);
 
-        return new VO<>(login);
+        StudentDTO studentDTO = studentService.oneStudentDTO(id);
+
+        return new VO<>(new Login<>(token, studentDTO));
     }
 
     @ApiOperation("注销")
@@ -110,9 +110,10 @@ public class StudentController {
     @ApiOperation("获取个人信息")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/profile_get", method = RequestMethod.POST)
-    public VO<Student> studentOwnInfo(@ApiIgnore @RequestAttribute("student") Student student) {
+    public VO<StudentDTO> studentOwnInfo(@ApiIgnore @RequestAttribute("student") Student student) {
 
-        return new VO<>(student);
+//        return new VO<>(student);
+        return new VO<>(studentService.oneStudentDTO(student.getStudentId()));
     }
 
     @ApiOperation("更新个人信息")
@@ -158,34 +159,34 @@ public class StudentController {
     @ApiOperation("根据课程名查找课程")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/find_course_name", method = RequestMethod.POST)
-    public VO<List<Course>> findCourseName(@ApiIgnore @RequestAttribute("student") Student student,
-                                           @ApiParam(required = true) @RequestParam("name") String name) {
+    public VO<List<CourseDTO>> findCourseName(@ApiIgnore @RequestAttribute("student") Student student,
+                                              @ApiParam(required = true) @RequestParam("name") String name) {
 
-        List<Course> courses = courseService.findByName(name);
+//        List<Course> courses = courseService.findByName(name);
 
-        return new VO<>(courses);
+        return new VO<>(courseService.courseDTOByName(name));
     }
 
     @ApiOperation("根据老师名查找课程")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/find_course_teacher_name", method = RequestMethod.POST)
-    public VO<List<Course>> findCourseTeacherName(@ApiIgnore @RequestAttribute("student") Student student,
-                                                  @ApiParam(required = true) @RequestParam("name") String name) {
+    public VO<List<CourseDTO>> findCourseTeacherName(@ApiIgnore @RequestAttribute("student") Student student,
+                                                     @ApiParam(required = true) @RequestParam("name") String name) {
 
-        List<Course> courses = courseService.findByTeacherName(name);
+//        List<Course> courses = courseService.findByTeacherName(name);
 
-        return new VO<>(courses);
+        return new VO<>(courseService.courseDTOByTeacherName(name));
     }
 
     @ApiOperation("查找学生选中所有课程")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/find_course_student_id", method = RequestMethod.POST)
-    public VO<List<Course>> findOwnAllCourse(@ApiIgnore @RequestAttribute("student") Student student,
-                                                  @ApiParam(required = true) @RequestParam("studentId") String studentId) {
+    public VO<List<CourseDTO>> findOwnAllCourse(@ApiIgnore @RequestAttribute("student") Student student,
+                                                @ApiParam(required = true) @RequestParam("studentId") String studentId) {
 
-        List<Course> courses = courseRoomService.findByStudentId(studentId);
+//        List<Course> courses = courseRoomService.findByStudentId(studentId);
 
-        return new VO<>(courses);
+        return new VO<>(courseRoomService.studentCourses(studentId));
     }
 
     @ApiOperation("加入课程")
@@ -194,31 +195,41 @@ public class StudentController {
     public VO<Empty> joinCourse(@ApiIgnore @RequestAttribute("student") Student student,
                                 @ApiParam(required = true) @RequestParam("courseId") String courseId) {
 
-        CourseRoom courseRoom = new CourseRoom(MyUtil.getStringID(), student.getStudentId(), courseId, new Date());
+        CourseRoom courseRoom = new CourseRoom(MyUtil.getStringID(), student.getStudentId(), courseId, new Date(), 0, 0);
         courseRoomService.saveOrUpdate(courseRoom);
 
         return MyUtil.emptyReturn();
     }
 
-    @ApiOperation("查看所有点名")
+    @ApiOperation("查看正在点名")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/all_roll_call", method = RequestMethod.POST)
-    public VO<List<RollCall>> allRollCall(@ApiIgnore @RequestAttribute("student") Student student,
-                                          @ApiParam(required = true) @RequestParam("courseId") String courseId) {
+    public VO<RollCallDTO> allRollCall(@ApiIgnore @RequestAttribute("student") Student student,
+                                       @ApiParam(required = true) @RequestParam("courseId") String courseId) {
 
-        List<RollCall> rollCalls = rollCallService.findAllByCourseId(courseId);
+//        List<RollCall> rollCalls = rollCallService.findAllByCourseId(courseId);
 
-        return new VO<>(rollCalls);
+        return new VO<>(rollCallService.oneRollCallByCourseId(courseId));
     }
 
     @ApiOperation("签到")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/resp_roll_call", method = RequestMethod.POST)
     public VO<Empty> respRollCall(@ApiIgnore @RequestAttribute("student") Student student,
-                                  @ApiParam(required = true) @RequestParam("rollcallId") String rollCallId,
+                                  @ApiParam(required = true) @RequestParam("courseId") String inCourseId,
                                   @ApiParam(required = true) @RequestParam("code") String code,
                                   @ApiParam(required = true) @RequestParam("latitude") double latitude,
                                   @ApiParam(required = true) @RequestParam("longitude") double longitude) {
+
+        RollCallDTO rollCallDTO = rollCallService.oneRollCallByCourseId(inCourseId);
+        if (rollCallDTO == null) {
+            return new VO<>(4003, "已停止签到", new Empty());
+        }
+
+        String rollCallId = rollCallDTO.getRollcallId();
+        if (rollCallId == null || rollCallId.length() <= 0) {
+            return new VO<>(4003, "已停止签到", new Empty());
+        }
 
         RollCall rollCall = rollCallService.findByRollCallId(rollCallId);
 
@@ -239,9 +250,9 @@ public class StudentController {
         rollCallService.saveAndUpdate(responseRollcall);
 
         String courseId = rollCall.getCourseId();
-        Score score = scoreService.findByStuIdAnCoreId(student.getStudentId(), courseId);
-        score.setRollcall(score.getRollcall() + 1);
-        scoreService.saveAndUpdate(score);
+        CourseRoom courseRoom = courseRoomService.findByStuIdAnCoreId(student.getStudentId(), courseId);
+        courseRoom.setRollCall(courseRoom.getRollCall() + 1);
+        courseRoomService.saveOrUpdate(courseRoom);
 
         return new VO<>(new Empty());
     }
@@ -249,12 +260,11 @@ public class StudentController {
     @ApiOperation("查看所有问题")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/all_question", method = RequestMethod.POST)
-    public VO<List<Question>> allQuestion(@ApiIgnore @RequestAttribute("student") Student student,
-                                          @ApiParam(required = true) @RequestParam("courseId") String courseId) {
+    public VO<List<QuestionDTO>> allQuestion(@ApiIgnore @RequestAttribute("student") Student student) {
 
-        List<Question> questions = questionService.findAllQuestionByCourseId(courseId);
+//        List<Question> questions = questionService.findAllQuestionByCourseId(courseId);
 
-        return new VO<>(questions);
+        return new VO<>(questionService.studentQuestion(student.getStudentId()));
     }
 
     @ApiOperation("回答问题")
@@ -280,9 +290,9 @@ public class StudentController {
         questionService.saveAndUpdate(answer1);
 
         String courseId = question.getCourseId();
-        Score score = scoreService.findByStuIdAnCoreId(student.getStudentId(), courseId);
-        score.setQuestion(score.getQuestion() + 1);
-        scoreService.saveAndUpdate(score);
+        CourseRoom courseRoom = courseRoomService.findByStuIdAnCoreId(student.getStudentId(), courseId);
+        courseRoom.setQuestion(courseRoom.getQuestion() + 1);
+        courseRoomService.saveOrUpdate(courseRoom);
 
         return MyUtil.emptyReturn();
     }
@@ -291,8 +301,8 @@ public class StudentController {
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/feedback", method = RequestMethod.POST)
     public VO<Empty> createFeedBack(@ApiIgnore @RequestAttribute("student") Student student,
-                              @ApiParam(required = true) @RequestParam("courseId") String courseId,
-                              @ApiParam(required = true) @RequestParam("content") String content) {
+                                    @ApiParam(required = true) @RequestParam("courseId") String courseId,
+                                    @ApiParam(required = true) @RequestParam("content") String content) {
 
         FeedBack feedBack = new FeedBack(MyUtil.getStringID(), courseId, student.getStudentId(), content, new Date());
         feedBackService.saveAndUpdate(feedBack);
@@ -303,21 +313,20 @@ public class StudentController {
     @ApiOperation("查看作业")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/homework", method = RequestMethod.POST)
-    public VO<List<Homework>> findHomework(@ApiIgnore @RequestAttribute("student") Student student,
-                                       @ApiParam(required = true) @RequestParam("courseId") String courseId) {
+    public VO<List<HomeworkDTO>> findHomework(@ApiIgnore @RequestAttribute("student") Student student) {
 
-        List<Homework> homework = homeworkService.findHomework(courseId);
+//        List<Homework> homework = homeworkService.findHomework(courseId);
 
-        return new VO<>(homework);
+        return new VO<>(homeworkService.studentHomeworks(student.getStudentId()));
     }
 
     @ApiOperation("私聊老师")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/to_teacher", method = RequestMethod.POST)
-    public VO toTeacher(@ApiIgnore @RequestAttribute("student") Student student,
-                        @ApiParam(required = true) @RequestParam("teacherId") String teacherId,
-                        @ApiParam(required = true) @RequestParam("content") String content,
-                        @ApiParam(required = true) @RequestParam("objectName") String objectName) {
+    public VO<Empty> toTeacher(@ApiIgnore @RequestAttribute("student") Student student,
+                               @ApiParam(required = true) @RequestParam("teacherId") String teacherId,
+                               @ApiParam(required = true) @RequestParam("content") String content,
+                               @ApiParam(required = true) @RequestParam("objectName") String objectName) {
 
         /*
          *  融云操作

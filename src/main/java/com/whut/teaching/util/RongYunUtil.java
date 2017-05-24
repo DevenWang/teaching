@@ -52,12 +52,12 @@ public class RongYunUtil {
     public static CodeSuccessResult PublishSystem(String fromId, String[] toId, String message) {
 
         CodeSuccessResult codeSuccessResult = null;
-        TxtMessage txtMessage = new TxtMessage(message, "");
+        TxtMessage txtMessage = new TxtMessage(message, " ");
 
         try {
-            codeSuccessResult = rongCloud.message.PublishSystem(fromId, toId, txtMessage, "课堂消息", "", 0, 0);
+            codeSuccessResult = rongCloud.message.PublishSystem(fromId, toId, txtMessage, "课堂消息", " ", 0, 0);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("融云发送失败！");
         }
 
         return codeSuccessResult;

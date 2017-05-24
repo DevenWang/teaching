@@ -2,6 +2,7 @@ package com.whut.teaching.service.impl;
 
 import com.whut.teaching.dao.InstituteDAO;
 import com.whut.teaching.dao.StudentDAO;
+import com.whut.teaching.dto.StudentDTO;
 import com.whut.teaching.model.Institute;
 import com.whut.teaching.model.Student;
 import com.whut.teaching.service.StudentService;
@@ -35,6 +36,16 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<Institute> findAllInstitute() {
         return (List<Institute>) instituteDAO.findAll();
+    }
+
+    @Override
+    public Institute findInstituteById(String instituteId) {
+        return instituteDAO.findOne(instituteId);
+    }
+
+    @Override
+    public StudentDTO oneStudentDTO(String studentId) {
+        return studentDAO.findOneStudentDTO(studentId);
     }
 
 }

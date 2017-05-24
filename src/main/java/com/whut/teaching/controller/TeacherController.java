@@ -1,5 +1,6 @@
 package com.whut.teaching.controller;
 
+import com.whut.teaching.dto.*;
 import com.whut.teaching.model.*;
 import com.whut.teaching.service.*;
 import com.whut.teaching.util.JedisUtils;
@@ -48,10 +49,10 @@ public class TeacherController {
     private FeedBackService feedBackService;
 
     @Autowired
-    private ScoreService scoreService;
+    private CourseRoomService courseRoomService;
 
     @Autowired
-    private CourseRoomService courseRoomService;
+    private StudentService studentService;
 
     @ApiOperation("教师注册")
     @RequestMapping(value = "/register", method = RequestMethod.POST)
@@ -74,8 +75,8 @@ public class TeacherController {
 
     @ApiOperation("教师登录")
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public VO<Login<Teacher>> login(@ApiParam(required = true) @RequestParam("id") String id,
-                                    @ApiParam(required = true) @RequestParam("pwd") String pwd) {
+    public VO<Login<TeacherDTO>> login(@ApiParam(required = true) @RequestParam("id") String id,
+                                       @ApiParam(required = true) @RequestParam("pwd") String pwd) {
 
         Teacher teacher = teacherService.findById(id);
 
@@ -93,9 +94,9 @@ public class TeacherController {
 
         JedisUtils.set(token, id);
 
-        Login<Teacher> login = new Login<>(token, teacher);
+        TeacherDTO teacherDTO = teacherService.findTeacherDTOByTeacherId(id);
 
-        return new VO<>(login);
+        return new VO<>(new Login<>(token, teacherDTO));
     }
 
     @ApiOperation("注销")
@@ -110,9 +111,9 @@ public class TeacherController {
     @ApiOperation("获取个人信息")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/profile_get", method = RequestMethod.POST)
-    public VO<Teacher> teacherOwnInfo(@ApiIgnore @RequestAttribute("teacher") Teacher teacher) {
+    public VO<TeacherDTO> teacherOwnInfo(@ApiIgnore @RequestAttribute("teacher") Teacher teacher) {
 
-        return new VO<>(teacher);
+        return new VO<>(teacherService.findTeacherDTOByTeacherId(teacher.getTeacherId()));
     }
 
     @ApiOperation("更新个人信息")
@@ -194,11 +195,9 @@ public class TeacherController {
     @ApiOperation("查看所有课程信息")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/course_info", method = RequestMethod.POST)
-    public VO<List<Course>> courseInfo(@ApiIgnore @RequestAttribute("teacher") Teacher teacher) {
+    public VO<List<CourseDTO>> courseInfo(@ApiIgnore @RequestAttribute("teacher") Teacher teacher) {
 
-        List<Course> courses = courseService.findByTeacherId(teacher.getTeacherId());
-
-        return new VO<>(courses);
+        return new VO<>(courseService.allCourseDTO());
     }
 
     @ApiOperation("更新课程")
@@ -240,14 +239,23 @@ public class TeacherController {
                               @ApiParam(required = true) @RequestParam("latitude") double latitude,
                               @ApiParam(required = true) @RequestParam("longitude") double longitude) {
 
+        //结束之前没有结束的点名
+        List<RollCall> rollCalls = rollCallService.findByCourseId(courseId, RollCall.STARTING_ROLLCALL);
+        if (rollCalls != null) {
+            for (RollCall rollCall : rollCalls) {
+                rollCall.setStatus(RollCall.ENDING_ROLLCALL);
+                rollCallService.saveAndUpdate(rollCall);
+            }
+        }
+
         RollCall rollCall = new RollCall(MyUtil.getStringID(), courseId, code, latitude, longitude, new Date(), RollCall.STARTING_ROLLCALL);
         rollCallService.saveAndUpdate(rollCall);
 
-        List<Student> students = courseRoomService.findByCourseId(courseId);
+        List<String> students = courseRoomService.studentIdsBycourseId(courseId);
         /*
             融云操作
          */
-        CodeSuccessResult codeSuccessResult = RongYunUtil.PublishSystem(teacher.getTeacherId(), (String[]) students.toArray(), "课堂点名");
+        CodeSuccessResult codeSuccessResult = RongYunUtil.PublishSystem(teacher.getTeacherId(), students.toArray(new String[students.size()]), "课堂点名");
         if (codeSuccessResult == null || codeSuccessResult.getCode() != 200) {
             return new VO<>(5001, "融云服务器推送失败", new Empty());
         }
@@ -276,23 +284,28 @@ public class TeacherController {
     @ApiOperation("查看所有点名")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/all_roll_call", method = RequestMethod.POST)
-    public VO<List<RollCall>> allRollcall(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
-                                          @ApiParam(required = true) @RequestParam("courseId") String id) {
+    public VO<List<RollCallDTO>> allRollcall(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
+                                             @ApiParam(required = true) @RequestParam("courseId") String id) {
 
-        List<RollCall> rollCalls = rollCallService.findAllByCourseId(id);
-
-        return new VO<>(rollCalls);
+        return new VO<>(rollCallService.rollCallDTOByCourseId(id));
     }
 
     @ApiOperation("查看迟到学生")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/late_student", method = RequestMethod.POST)
-    public VO<List<Student>> lateStudent(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
-                                         @ApiParam(required = true) @RequestParam("rollcallId") String rollcallId) {
+    public VO<List<StudentDTO>> lateStudent(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
+                                            @ApiParam(required = true) @RequestParam("rollcallId") String rollcallId) {
 
         List<Student> students = rollCallService.findLastStudent(rollcallId);
 
-        return new VO<>(students);
+        List<StudentDTO> studentDTOS = new ArrayList<>();
+        if (students != null && students.size() > 0) {
+            for (Student student : students) {
+                studentDTOS.add(studentService.oneStudentDTO(student.getStudentId()));
+            }
+        }
+
+        return new VO<>(studentDTOS);
     }
 
     @ApiOperation("补签")
@@ -306,9 +319,9 @@ public class TeacherController {
         rollCallService.saveAndUpdate(responseRollcall);
 
         String courseId = rollCallService.findByRollCallId(rollcallId).getCourseId();
-        Score score = scoreService.findByStuIdAnCoreId(studentId, courseId);
-        score.setRollcall(score.getRollcall() + 1);
-        scoreService.saveAndUpdate(score);
+        CourseRoom courseRoom = courseRoomService.findByStuIdAnCoreId(studentId, courseId);
+        courseRoom.setRollCall(courseRoom.getRollCall() + 1);
+        courseRoomService.saveOrUpdate(courseRoom);
 
         return MyUtil.emptyReturn();
     }
@@ -324,11 +337,12 @@ public class TeacherController {
         Question question1 = new Question(MyUtil.getStringID(), courseId, question, realAnswer, Question.STARTING_QUESTION, new Date());
         questionService.saveAndUpdate(question1);
 
-        List<Student> students = courseRoomService.findByCourseId(courseId);
+        List<String> students = courseRoomService.studentIdsBycourseId(courseId);
+
         /*
             融云操作
          */
-        CodeSuccessResult codeSuccessResult = RongYunUtil.PublishSystem(teacher.getTeacherId(), (String[]) students.toArray(), question);
+        CodeSuccessResult codeSuccessResult = RongYunUtil.PublishSystem(teacher.getTeacherId(), students.toArray(new String[students.size()]), question);
         if (codeSuccessResult == null || codeSuccessResult.getCode() != 200) {
             return new VO<>(5001, "融云服务器推送失败", new Empty());
         }
@@ -339,27 +353,24 @@ public class TeacherController {
     @ApiOperation("查看所有问题")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/all_question", method = RequestMethod.POST)
-    public VO<List<Question>> allQuestion(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
-                                          @ApiParam(required = true) @RequestParam("courseId") String courseId) {
+    public VO<List<QuestionDTO>> allQuestion(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
+                                             @ApiParam(required = true) @RequestParam("courseId") String courseId) {
 
-        List<Question> questions = questionService.findAllQuestionByCourseId(courseId);
-
-        return new VO<>(questions);
+          return new VO<>(questionService.courseQuestionDTOs(courseId));
     }
 
     @ApiOperation("查看问题结果")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/answer_result", method = RequestMethod.POST)
-    public VO<List<Answer>> answerResult(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
+    public VO<List<AnswerDTO>> answerResult(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
                                          @ApiParam(required = true) @RequestParam("questionId") String questionId) {
 
         Question question = questionService.findByQuestionId(questionId);
         question.setStatus(Question.ENDING_QUESTION);
         questionService.saveAndUpdate(question);
 
-        List<Answer> answers = questionService.checkAnswer(questionId);
 
-        return new VO<>(answers);
+        return new VO<>(questionService.questionAnswerDTO(questionId));
     }
 
     @ApiOperation("布置课后作业")
@@ -379,34 +390,40 @@ public class TeacherController {
     @ApiOperation("查看课程反馈")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/feedback", method = RequestMethod.POST)
-    public VO<List<FeedBack>> searchFeedBack(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
+    public VO<List<FeedbackDTO>> searchFeedBack(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
                                              @ApiParam(required = true) @RequestParam("courseId") String courseId) {
 
-        List<FeedBack> feedBacks = feedBackService.findByCourseId(courseId);
 
-        return new VO<>(feedBacks);
+        return new VO<>(feedBackService.courseFeedBackDTO(courseId));
     }
 
     @ApiOperation("查看课程平时成绩")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/score", method = RequestMethod.POST)
-    public VO<List<Score>> score(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
-                                 @ApiParam(required = true) @RequestParam("courseId") String courseId) {
+    public VO<List<CourseRoomDTO>> score(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
+                                      @ApiParam(required = true) @RequestParam("courseId") String courseId) {
 
-        List<Score> scores = scoreService.findScoreByCourseId(courseId);
+//        List<CourseRoom> courseRooms = courseRoomService.findCourseRoomByCourseId(courseId);
 
-        return new VO<>(scores);
+        return new VO<>(courseRoomService.courseScores(courseId));
     }
 
     @ApiOperation("查看课程学生")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/all_student", method = RequestMethod.POST)
-    public VO<List<Student>> allStudent(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
+    public VO<List<StudentDTO>> allStudent(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
                                         @ApiParam(required = true) @RequestParam("courseId") String courseId) {
 
         List<Student> students = courseRoomService.findByCourseId(courseId);
 
-        return new VO<>(students);
+        List<StudentDTO> studentDTOS = new ArrayList<>();
+        if (students != null && students.size() > 0) {
+            for (Student student : students) {
+                studentDTOS.add(studentService.oneStudentDTO(student.getStudentId()));
+            }
+        }
+
+        return new VO<>(studentDTOS);
     }
 
     @ApiOperation("私聊学生")

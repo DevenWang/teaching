@@ -1,6 +1,7 @@
 package com.whut.teaching.service.impl;
 
 import com.whut.teaching.dao.HomeworkDAO;
+import com.whut.teaching.dto.HomeworkDTO;
 import com.whut.teaching.model.Homework;
 import com.whut.teaching.service.HomeworkService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,11 @@ public class HomeworkServiceImpl implements HomeworkService {
     @Override
     public List<Homework> findHomework(String courseId) {
         return homeworkDAO.findByCourseId(courseId);
+    }
+
+    @Override
+    public List<HomeworkDTO> studentHomeworks(String studentId) {
+        return homeworkDAO.studentHomeworkDTOs(studentId);
     }
 
 }

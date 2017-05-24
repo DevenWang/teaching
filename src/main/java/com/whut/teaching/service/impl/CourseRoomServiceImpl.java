@@ -3,6 +3,8 @@ package com.whut.teaching.service.impl;
 import com.whut.teaching.dao.CourseDAO;
 import com.whut.teaching.dao.CourseRoomDAO;
 import com.whut.teaching.dao.StudentDAO;
+import com.whut.teaching.dto.CourseDTO;
+import com.whut.teaching.dto.CourseRoomDTO;
 import com.whut.teaching.model.Course;
 import com.whut.teaching.model.CourseRoom;
 import com.whut.teaching.model.Student;
@@ -70,7 +72,7 @@ public class CourseRoomServiceImpl implements CourseRoomService {
              */
             List<CourseRoom> find = courseRoomDAO.findByStudentIdAndCourseId(studentId, courseId);
             if (find == null || find.size() <= 0) {
-                courseRooms.add(new CourseRoom(MyUtil.getStringID(), studentId, courseId, new Date()));
+                courseRooms.add(new CourseRoom(MyUtil.getStringID(), studentId, courseId, new Date(), 0, 0));
             }
         }
 
@@ -80,5 +82,38 @@ public class CourseRoomServiceImpl implements CourseRoomService {
             return null;
         }
 
+    }
+
+    @Override
+    public List<CourseRoom> findCourseRoomByCourseId(String courseId) {
+        return courseRoomDAO.findByCourseId(courseId);
+    }
+
+    @Override
+    public CourseRoom findByStuIdAnCoreId(String studentId, String courseId) {
+
+        List<CourseRoom> courseRooms = courseRoomDAO.findByStudentIdAndCourseId(studentId, courseId);
+
+        if (courseRooms != null || courseRooms.size() > 0) {
+            return courseRooms.get(0);
+        } else {
+            CourseRoom courseRoom = new CourseRoom(MyUtil.getStringID(), studentId, courseId, new Date(), 0, 0);
+            return courseRoom;
+        }
+    }
+
+    @Override
+    public List<CourseRoomDTO> courseScores(String courseId) {
+        return courseRoomDAO.courseScores(courseId);
+    }
+
+    @Override
+    public List<CourseDTO> studentCourses(String studentId) {
+        return courseRoomDAO.studentCourses(studentId);
+    }
+
+    @Override
+    public List<String> studentIdsBycourseId(String courseId) {
+        return courseRoomDAO.findStudentId(courseId);
     }
 }

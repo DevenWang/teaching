@@ -1,6 +1,11 @@
 package com.whut.teaching.controller;
 
+import com.whut.teaching.dao.CourseDAO;
+import com.whut.teaching.dao.RollCallDAO;
+import com.whut.teaching.dao.TeacherDAO;
+import com.whut.teaching.dto.TeacherDTO;
 import com.whut.teaching.model.Course;
+import com.whut.teaching.model.RollCall;
 import com.whut.teaching.service.CourseService;
 import com.whut.teaching.util.MyUtil;
 import com.whut.teaching.vo.Empty;
@@ -23,6 +28,15 @@ public class TestController {
     @Autowired
     private CourseService courseService;
 
+    @Autowired
+    private TeacherDAO teacherDAO;
+
+    @Autowired
+    private CourseDAO courseDAO;
+
+    @Autowired
+    private RollCallDAO rollCallDAO;
+
     @ApiOperation("测试")
     @RequestMapping(value = "/test/test")
     public VO test(){
@@ -30,7 +44,8 @@ public class TestController {
         Course course = new Course(MyUtil.getStringID(),"t001","teacher","description",new Date(),1);
 
 //        courseServicrvice.saveOrUpdate(course);
-        return new VO(new Empty());
+        TeacherDTO teacherDTO = teacherDAO.findTeacherDTOByTeacherId("111");
+        return new VO();
 
     }
 

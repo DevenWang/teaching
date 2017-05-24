@@ -3,6 +3,7 @@ package com.whut.teaching.service.impl;
 import com.whut.teaching.dao.ResponseRollCallDAO;
 import com.whut.teaching.dao.RollCallDAO;
 import com.whut.teaching.dao.StudentDAO;
+import com.whut.teaching.dto.RollCallDTO;
 import com.whut.teaching.model.ResponseRollcall;
 import com.whut.teaching.model.RollCall;
 import com.whut.teaching.model.Student;
@@ -52,8 +53,8 @@ public class RollCallServiceImpl implements RollCallService{
 
         List<String> studentIds = responseRollCallDAO.findLastStudentId(rollCallId);
         if (studentIds != null && studentIds.size() > 0) {
-            List<Student> lastStudent = (List<Student>) studentDAO.findAll(studentIds);
-            return lastStudent;
+            List<Student> lastStudents = (List<Student>) studentDAO.findAll(studentIds);
+            return lastStudents;
         }
 
         return null;
@@ -62,6 +63,22 @@ public class RollCallServiceImpl implements RollCallService{
     @Override
     public ResponseRollcall saveAndUpdate(ResponseRollcall responseRollcall) {
         return responseRollCallDAO.save(responseRollcall);
+    }
+
+    @Override
+    public List<RollCallDTO> rollCallDTOByCourseId(String courseId) {
+        return rollCallDAO.allRollCallDTOBycourseId(courseId);
+    }
+
+    @Override
+    public RollCallDTO oneRollCallByCourseId(String courseId) {
+        List<RollCallDTO> rollCallDTOS = rollCallDAO.oneRollCallDTOBycourseId(courseId);
+
+        if (rollCallDTOS != null && rollCallDTOS.size() > 0) {
+            return rollCallDTOS.get(0);
+        }
+
+        return null;
     }
 
 }

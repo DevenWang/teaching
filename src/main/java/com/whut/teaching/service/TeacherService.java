@@ -1,6 +1,7 @@
 package com.whut.teaching.service;
 
 
+import com.whut.teaching.dto.TeacherDTO;
 import com.whut.teaching.model.Teacher;
 
 import java.util.List;
@@ -17,5 +18,7 @@ public interface TeacherService {
     List<Teacher> findByName(String name);
 
     List<Teacher> findByInstitute(String institute);
+
+    TeacherDTO findTeacherDTOByTeacherId(String teacherId);
 
 }

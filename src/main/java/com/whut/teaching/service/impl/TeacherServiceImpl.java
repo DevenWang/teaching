@@ -1,6 +1,7 @@
 package com.whut.teaching.service.impl;
 
 import com.whut.teaching.dao.TeacherDAO;
+import com.whut.teaching.dto.TeacherDTO;
 import com.whut.teaching.model.Teacher;
 import com.whut.teaching.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,11 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public List<Teacher> findByInstitute(String institute) {
         return teacherDAO.findByInstituteId(institute);
+    }
+
+    @Override
+    public TeacherDTO findTeacherDTOByTeacherId(String teacherId) {
+        return teacherDAO.findTeacherDTOByTeacherId(teacherId);
     }
 
 }

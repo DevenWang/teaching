@@ -2,6 +2,8 @@ package com.whut.teaching.service.impl;
 
 import com.whut.teaching.dao.AnswerDAO;
 import com.whut.teaching.dao.QuestionDAO;
+import com.whut.teaching.dto.AnswerDTO;
+import com.whut.teaching.dto.QuestionDTO;
 import com.whut.teaching.model.Answer;
 import com.whut.teaching.model.Question;
 import com.whut.teaching.service.QuestionService;
@@ -43,6 +45,11 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    public List<QuestionDTO> courseQuestionDTOs(String courseId) {
+        return questionDAO.courseQuestionDTOs(courseId);
+    }
+
+    @Override
     public Answer saveAndUpdate(Answer answer) {
         return answerDAO.save(answer);
     }
@@ -50,6 +57,16 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public List<Answer> checkAnswer(String questionId) {
         return answerDAO.findByQuestionId(questionId);
+    }
+
+    @Override
+    public List<AnswerDTO> questionAnswerDTO(String questionId) {
+        return answerDAO.questionAnswerDTOs(questionId);
+    }
+
+    @Override
+    public List<QuestionDTO> studentQuestion(String studentId) {
+        return questionDAO.studentQuestionDTOs(studentId);
     }
 
 }
