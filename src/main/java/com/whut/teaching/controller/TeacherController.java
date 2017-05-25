@@ -269,7 +269,7 @@ public class TeacherController {
             return new VO<>(5001, "融云服务器推送失败", new Empty());
         }
 
-        return new VO<>(new Empty());
+        return new VO<>(new Empty(rollCall.getRollcallId()));
     }
 
     @ApiOperation("结束点名")
@@ -356,7 +356,7 @@ public class TeacherController {
             return new VO<>(5001, "融云服务器推送失败", new Empty());
         }
 
-        return MyUtil.emptyReturn();
+        return new VO<>(new Empty(question1.getQuestionId()));
     }
 
     @ApiOperation("查看所有问题")

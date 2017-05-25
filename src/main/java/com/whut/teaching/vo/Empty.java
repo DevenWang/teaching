@@ -7,6 +7,13 @@ public class Empty {
 
     private String empty;
 
+    public Empty() {
+    }
+
+    public Empty(String empty) {
+        this.empty = empty;
+    }
+
     public String getEmpty() {
         return empty;
     }
