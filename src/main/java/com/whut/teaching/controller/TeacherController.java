@@ -171,23 +171,32 @@ public class TeacherController {
     @RequestMapping(value = "/add_stu_to_course", method = RequestMethod.POST)
     public VO<Empty> addStudentToCourse(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
                                         @ApiParam(required = true) @RequestParam("courseId") String courseId,
-                                        @ApiParam(required = true) @RequestParam("studentIds") List<String> studentIds) {
+                                        @ApiParam(required = true) @RequestParam("studentIds") String studentIds) {
 
-        /*
 
         //如果传的学生id是一个以“，”分割的多个id，采用以下方法
 
         //优化后高效的字符串分割方式
         List<String> resultId = new ArrayList<>();
+
         while (true) {
             int j = studentIds.indexOf(',');
-            if (j<0) break;
+            if (j < 0) {
+
+                //只有一个学生、末尾最后一个学生
+                if (studentIds != null && studentIds.length() > 0) {
+                    resultId.add(studentIds);
+                }
+
+                break;
+            }
+
             resultId.add(studentIds.substring(0, j));
             studentIds = studentIds.substring(j + 1);
         }
-        */
 
-        courseRoomService.addStudentsToCourse(courseId, studentIds);
+
+        courseRoomService.addStudentsToCourse(courseId, resultId);
 
         return new VO(new Empty());
     }
@@ -356,14 +365,14 @@ public class TeacherController {
     public VO<List<QuestionDTO>> allQuestion(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
                                              @ApiParam(required = true) @RequestParam("courseId") String courseId) {
 
-          return new VO<>(questionService.courseQuestionDTOs(courseId));
+        return new VO<>(questionService.courseQuestionDTOs(courseId));
     }
 
     @ApiOperation("查看问题结果")
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/answer_result", method = RequestMethod.POST)
     public VO<List<AnswerDTO>> answerResult(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
-                                         @ApiParam(required = true) @RequestParam("questionId") String questionId) {
+                                            @ApiParam(required = true) @RequestParam("questionId") String questionId) {
 
         Question question = questionService.findByQuestionId(questionId);
         question.setStatus(Question.ENDING_QUESTION);
@@ -391,7 +400,7 @@ public class TeacherController {
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/feedback", method = RequestMethod.POST)
     public VO<List<FeedbackDTO>> searchFeedBack(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
-                                             @ApiParam(required = true) @RequestParam("courseId") String courseId) {
+                                                @ApiParam(required = true) @RequestParam("courseId") String courseId) {
 
 
         return new VO<>(feedBackService.courseFeedBackDTO(courseId));
@@ -401,7 +410,7 @@ public class TeacherController {
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/score", method = RequestMethod.POST)
     public VO<List<CourseRoomDTO>> score(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
-                                      @ApiParam(required = true) @RequestParam("courseId") String courseId) {
+                                         @ApiParam(required = true) @RequestParam("courseId") String courseId) {
 
 //        List<CourseRoom> courseRooms = courseRoomService.findCourseRoomByCourseId(courseId);
 
@@ -412,7 +421,7 @@ public class TeacherController {
     @ApiImplicitParam(value = "token", name = "token", paramType = "query", dataType = "String", required = true)
     @RequestMapping(value = "/all_student", method = RequestMethod.POST)
     public VO<List<StudentDTO>> allStudent(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
-                                        @ApiParam(required = true) @RequestParam("courseId") String courseId) {
+                                           @ApiParam(required = true) @RequestParam("courseId") String courseId) {
 
         List<Student> students = courseRoomService.findByCourseId(courseId);
 

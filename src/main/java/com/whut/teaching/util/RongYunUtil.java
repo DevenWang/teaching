@@ -33,7 +33,11 @@ public class RongYunUtil {
         try {
             userGetTokenResult = rongCloud.user.getToken(userId, userName, portratUri);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("融云发送失败！");
+        }
+
+        if (userGetTokenResult == null) {
+            return null;
         }
 
         TokenResult tokenResult = GsonUtils.parse(userGetTokenResult.toString(), TokenResult.class);
@@ -80,7 +84,7 @@ public class RongYunUtil {
         try {
             codeSuccessResult = rongCloud.message.publishPrivate(fromId, to_a_Id, txtMessage, "", "", "4", 0, 1, 0, 0);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("融云发送失败！");
         }
 
         return codeSuccessResult;

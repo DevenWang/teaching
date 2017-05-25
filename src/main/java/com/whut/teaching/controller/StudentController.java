@@ -89,6 +89,10 @@ public class StudentController {
          */
         String token = RongYunUtil.getToken(id, student.getName(), student.getPortraitUri());
 
+        if (token == null || token.length() <= 0) {
+            return new VO<>(1002, "融云链接失败", null);
+        }
+
         JedisUtils.set(token, id);
 
 //        Login<Student> login = new Login<>(token, student);
