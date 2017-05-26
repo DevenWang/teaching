@@ -69,4 +69,9 @@ public class QuestionServiceImpl implements QuestionService {
         return questionDAO.studentQuestionDTOs(studentId);
     }
 
+    @Override
+    public int countQuestion(String courseId) {
+        return questionDAO.countByCourseId(courseId);
+    }
+
 }

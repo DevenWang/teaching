@@ -81,4 +81,9 @@ public class RollCallServiceImpl implements RollCallService{
         return null;
     }
 
+    @Override
+    public int countRollCall(String courseId) {
+        return rollCallDAO.countByCourseId(courseId);
+    }
+
 }

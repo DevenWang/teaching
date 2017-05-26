@@ -28,4 +28,6 @@ public interface RollCallService {
 
     RollCallDTO oneRollCallByCourseId(String courseId);
 
+    int countRollCall(String courseId);
+
 }

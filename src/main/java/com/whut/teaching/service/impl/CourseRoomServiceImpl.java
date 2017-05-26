@@ -70,7 +70,6 @@ public class CourseRoomServiceImpl implements CourseRoomService {
             /*
              *判断是否已经添加
              */
-
             System.out.println(studentId+"===============================");
 
             List<CourseRoom> find = courseRoomDAO.findByStudentIdAndCourseId(studentId, courseId);

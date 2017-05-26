@@ -2,7 +2,12 @@ package com.whut.teaching.util;
 
 import com.whut.teaching.vo.Empty;
 import com.whut.teaching.vo.VO;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -53,6 +58,11 @@ public class MyUtil {
         sb2 = Math.sin(b / 2.0);
         d = 2 * EARTH_RADIUS * Math.asin(Math.sqrt(sa2 * sa2 + Math.cos(lat1) * Math.cos(lat2) * sb2 * sb2));
         return d * 1000;
+    }
+
+    public static String getDate(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+        return sdf.format(date);
     }
 
 }

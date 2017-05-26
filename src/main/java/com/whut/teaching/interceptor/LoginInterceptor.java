@@ -36,6 +36,9 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
         if (path.startsWith("student/register", 1) || path.startsWith("teacher/register", 1)) {
             return true;
         }
+        if (path.startsWith("institute_get", 1)) {
+            return true;
+        }
 
         if (token == null || (uid = JedisUtils.get(token)) == null) {
             response.getWriter().print(GsonUtils.toJson(VO.INVALID_TOKEN));
@@ -48,7 +51,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
 
-        if (path.startsWith("teacher", 1)) {
+        if (path.startsWith("teacher", 1) || path.startsWith("excel", 1)) {
             Teacher teacher = teacherService.findById(uid);
             request.setAttribute("teacher", teacher);
             return true;

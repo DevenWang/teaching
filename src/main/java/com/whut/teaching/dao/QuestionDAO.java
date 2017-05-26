@@ -36,4 +36,6 @@ public interface QuestionDAO extends CrudRepository<Question, String> {
             " and i.instituteId=t.instituteId ")
     List<QuestionDTO> studentQuestionDTOs(@Param("studentId") String studentId);
 
+    int countByCourseId(String courseId);
+
 }

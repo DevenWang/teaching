@@ -30,4 +30,6 @@ public interface QuestionService {
 
     List<QuestionDTO> studentQuestion(String studentId);
 
+    int countQuestion(String courseId);
+
 }

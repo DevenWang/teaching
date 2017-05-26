@@ -19,7 +19,7 @@ public class MyWebMvcConfigurer extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
 
         registry.addInterceptor(loginInterceptor).addPathPatterns("/student/*", "/teacher/*");
-
+        registry.addInterceptor(loginInterceptor).addPathPatterns("/excel*");
 
         super.addInterceptors(registry);
     }

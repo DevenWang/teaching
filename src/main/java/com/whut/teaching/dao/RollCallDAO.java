@@ -33,4 +33,6 @@ public interface RollCallDAO extends CrudRepository<RollCall, String> {
             " and r.status=1")
     List<RollCallDTO> oneRollCallDTOBycourseId(@Param("courseId") String courseId);
 
+    int countByCourseId(String courseId);
+
 }
