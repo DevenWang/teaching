@@ -70,8 +70,7 @@ public class CourseRoomServiceImpl implements CourseRoomService {
             /*
              *判断是否已经添加
              */
-            System.out.println(studentId+"===============================");
-
+//            System.out.println(studentId+"===============================");
             List<CourseRoom> find = courseRoomDAO.findByStudentIdAndCourseId(studentId, courseId);
             if (find == null || find.size() <= 0) {
                 courseRooms.add(new CourseRoom(MyUtil.getStringID(), studentId, courseId, new Date(), 0, 0));
