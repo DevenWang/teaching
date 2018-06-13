@@ -49,9 +49,9 @@ public class RollCallServiceImpl implements RollCallService{
     }
 
     @Override
-    public List<Student> findLastStudent(String rollCallId) {
+    public List<Student> findLastStudent(String rollCallId, String courseId) {
 
-        List<String> studentIds = responseRollCallDAO.findLastStudentId(rollCallId);
+        List<String> studentIds = responseRollCallDAO.findLastStudentId(rollCallId, courseId);
         if (studentIds != null && studentIds.size() > 0) {
             List<Student> lastStudents = (List<Student>) studentDAO.findAll(studentIds);
             return lastStudents;
@@ -84,6 +84,11 @@ public class RollCallServiceImpl implements RollCallService{
     @Override
     public int countRollCall(String courseId) {
         return rollCallDAO.countByCourseId(courseId);
+    }
+
+    @Override
+    public RollCall findOne(String id) {
+        return rollCallDAO.findOne(id);
     }
 
 }

@@ -206,7 +206,7 @@ public class TeacherController {
     @RequestMapping(value = "/course_info", method = RequestMethod.POST)
     public VO<List<CourseDTO>> courseInfo(@ApiIgnore @RequestAttribute("teacher") Teacher teacher) {
 
-        return new VO<>(courseService.allCourseDTO());
+        return new VO<>(courseService.allCourseDTO(teacher.getTeacherId()));
     }
 
     @ApiOperation("更新课程")
@@ -305,7 +305,9 @@ public class TeacherController {
     public VO<List<StudentDTO>> lateStudent(@ApiIgnore @RequestAttribute("teacher") Teacher teacher,
                                             @ApiParam(required = true) @RequestParam("rollcallId") String rollcallId) {
 
-        List<Student> students = rollCallService.findLastStudent(rollcallId);
+        RollCall rollCall = rollCallService.findOne(rollcallId);
+        String courseId = rollCall != null ? rollCall.getCourseId() : "";
+        List<Student> students = rollCallService.findLastStudent(rollcallId, courseId);
 
         List<StudentDTO> studentDTOS = new ArrayList<>();
         if (students != null && students.size() > 0) {

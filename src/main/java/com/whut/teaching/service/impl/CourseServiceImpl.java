@@ -49,8 +49,8 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<CourseDTO> allCourseDTO() {
-        return courseDAO.allCourseDTO();
+    public List<CourseDTO> allCourseDTO(String teacherId) {
+        return courseDAO.allCourseDTO(teacherId);
     }
 
     @Override

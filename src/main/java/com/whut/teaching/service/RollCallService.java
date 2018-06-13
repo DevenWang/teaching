@@ -20,7 +20,7 @@ public interface RollCallService {
 
     List<RollCall> findByCourseId(String courseId, int status);
 
-    List<Student> findLastStudent(String rollCallId);
+    List<Student> findLastStudent(String rollCallId, String courseId);
 
     ResponseRollcall saveAndUpdate(ResponseRollcall responseRollcall);
 
@@ -29,5 +29,7 @@ public interface RollCallService {
     RollCallDTO oneRollCallByCourseId(String courseId);
 
     int countRollCall(String courseId);
+
+    RollCall findOne(String id);
 
 }

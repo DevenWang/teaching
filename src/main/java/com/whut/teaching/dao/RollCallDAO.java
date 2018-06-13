@@ -14,6 +14,9 @@ import java.util.List;
  */
 public interface RollCallDAO extends CrudRepository<RollCall, String> {
 
+    @Override
+    RollCall findOne(String s);
+
     List<RollCall> findByCourseId(String courseId);
 
     List<RollCall> findByCourseIdAndStatus(String courseId, int status);

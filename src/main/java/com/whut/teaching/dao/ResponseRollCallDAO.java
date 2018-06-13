@@ -11,8 +11,8 @@ import java.util.List;
  */
 public interface ResponseRollCallDAO extends CrudRepository<ResponseRollcall, String> {
 
-    @Query(nativeQuery = true, value = "SELECT s.student_id FROM student s WHERE s.student_id NOT IN " +
+    @Query(nativeQuery = true, value = "SELECT s.student_id FROM course_room s WHERE s.course_id = ?2 AND s.student_id NOT IN " +
             " (SELECT student_id FROM response_rollcall WHERE rollcall_id =?1)")
-    List<String> findLastStudentId(String rollCallId);
+    List<String> findLastStudentId(String rollCallId, String courseId);
 
 }

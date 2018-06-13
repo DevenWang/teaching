@@ -24,8 +24,8 @@ public interface CourseDAO extends CrudRepository<Course, String> {
     List<Course> findByTeacherName(String teacherName);
 
     @Query("select new com.whut.teaching.dto.CourseDTO(c,t,i) from Course c,com.whut.teaching.model.Teacher t,com.whut.teaching.model.Institute i " +
-            " where t.instituteId=i.instituteId and t.teacherId=c.teacherId")
-    List<CourseDTO> allCourseDTO();
+            " where t.instituteId=i.instituteId and t.teacherId=c.teacherId and t.teacherId=?1")
+    List<CourseDTO> allCourseDTO(String teacherId);
 
     @Query("select new com.whut.teaching.dto.CourseDTO(c,t,i) " +
             " from Course c,com.whut.teaching.model.Teacher t, " +

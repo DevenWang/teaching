@@ -22,7 +22,7 @@ public interface CourseService {
 
     List<Course> findByTeacherName(String teacherName);
 
-    List<CourseDTO> allCourseDTO();
+    List<CourseDTO> allCourseDTO(String teacherId);
 
     List<CourseDTO> courseDTOByName(String name);
 
